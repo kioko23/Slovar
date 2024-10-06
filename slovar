@@ -1,0 +1,40 @@
+import psycopg2
+
+try:
+
+    conn = psycopg2.connect(
+        host="localhost",
+        database="your_database",
+        user="your_username",
+        password="your_password"
+    )
+
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        name VARCHAR(100),
+        age INT
+    );
+    """)
+    conn.commit()
+
+    cursor.execute("INSERT INTO users (name, age) VALUES (%s, %s)", ('Alice', 25))
+    conn.commit()
+
+
+    cursor.execute("SELECT * FROM users;")
+    records = cursor.fetchall()
+
+    for record in records:
+        print(record)
+
+except Exception as error:
+    print(f"Ошибка при работе с PostgreSQL: {error}")
+
+finally:
+    if conn:
+        cursor.close()
+        conn.close()
+        print("Соединение с PostgreSQL закрыто")
